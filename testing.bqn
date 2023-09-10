@@ -1,30 +1,24 @@
-# Just some testing for the == and != tokens.
-# They naturally have a linear dependency
-# ...though you technically could ignore those cause they always will fail to parse.
-# Just make any chain of more than 2 equals a lex failure
-# Could do the same for anything !== and beyond.
-# Kinda like generating the parse error early
-# ...I may do that in the final code for simplicity and perf
-# Could also technically delay all of this to the parser but that changes token types.
-src←"a!===!b====!====!c"
-e←'='=src
-n←'!'=src
-# This filters out all of the `!=`s
-ne←e(⊢∧«∘∧⟜»)n
-o1←e (¬»ne)⊸∧↩
-# Each stage here filters out the leftmost `==` in a group
-# Would be done with a repeat instead of manually (repeat based on the max)
-o2←c←(+×0⊸≠)`⌾⌽ e
-m←⌈´c
-o3←c↩(c×⊢¬∘∨»)m=c
-m↩⌈´c
-o4←c↩(c×⊢¬∘∨»)m=c
-# What is left here is the indivial `=`s
-m↩⌈´c
-o5←c↩(c×⊢¬∘∨»)m=c
-•Show >src‿((⊢∨»)ne)‿o1‿o2‿o3‿o4‿o5
+src←"let five = 5;
+let ten = 10;
 
-src↩"true 27 < if if123 let>nolet;"
+let add = fn(x, y) {
+  x + y;
+};
+
+let result = add(five, ten);
+!-/*5;
+5 < 10 > 5;
+
+if (5 < 10) {
+    return true;
+} else {
+    return false;
+}
+
+10 == 10;
+10 != 9;
+let nottrue = false;
+"
 
 # Get all the letters, their first index, and the length of chains
 az←('_'⊸=∨('a'⊸≤∧≤⟜'z')∨('A'⊸≤∧≤⟜'Z')) src
@@ -43,11 +37,23 @@ kwi←pi/˜¨ kws {kw←𝕨⋄{kw≡(≠kw)↑𝕩↓src}¨𝕩}¨ pi
 
 •Show >kws‿kwi
 
-# All other symbols are just single characters.
-# Note: need to use the special info from above for = and !.
-tc←"=+-!/*<>;,"
-fc←tc∊˜src
+# Only match the first `!=` or `==` in a chain.
+# Repeats will be invalid syntax anyway.
+# So it is fine to parse `====` as `==` `=` `=`.
+n‿e←⋈˝"!="=⌜src
+ne←e(⊢∧«∘∧⟜»)n
+n (¬ne)⊸∧↩
+e (¬»ne)⊸∧↩
+ee←(«∧⊢>»)e
+e ((¬»∨⊢)ee)⊸∧↩
 
-•Show >src‿faz‿laz‿fnum‿lnum‿fc
-# This is all of the pieces needed for a monkey lang tokenizer.
+# All other symbols are just single characters.
+tc←"+-/*<>;,"
+fc←n∧e∧tc∊˜src
+
+•Show ⍉>src‿faz‿laz‿fnum‿lnum‿ne‿ee‿fc
+
+# This should now be a full monkey lang tokenizer (minus extensions).
+# Of course would have to get more fancy to deal with strings and comments.
+
 # Probably should also double check for no invalid characters instead of skipping them.

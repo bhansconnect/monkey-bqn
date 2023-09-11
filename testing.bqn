@@ -35,7 +35,22 @@ kws←"fn"‿"let"‿"true"‿"false"‿"if"‿"else"‿"return"
 pi←{/laz=≠𝕩}¨kws
 kwi←pi/˜¨ kws {kw←𝕨⋄{kw≡(≠kw)↑𝕩↓src}¨𝕩}¨ pi
 
-•Show >kws‿kwi
+# •Show >kws‿kwi
+
+# Extract keyword types into full array.
+kwm←-1+↕≠kwi
+•Show >kws‿kwm
+
+c←↕≠src
+kwt←+´kwm(⊣×c⊸∊)¨kwi
+
+# Merge keyword tokens back into lengths as negative values
+# These 2 steps may go away and instead fall into final merging phase.
+laz↩kwt+laz×kwt=0
+
+# merge numbers and idents since they ared distinguishable by the first character.
+faz fnum⊸+↩
+laz lnum⊸+↩
 
 # Only match the first `!=` or `==` in a chain.
 # Repeats will be invalid syntax anyway.
@@ -49,9 +64,15 @@ e ((¬»∨⊢)ee)⊸∧↩
 
 # All other symbols are just single characters.
 tc←"+-/*<>;,"
-fc←n∧e∧tc∊˜src
+fc←n∨e∨tc∊˜src
 
-•Show ⍉>src‿faz‿laz‿fnum‿lnum‿ne‿ee‿fc
+•Show ⍉>src‿faz‿laz‿ne‿ee‿fc
+
+# TODO: merged into single compressed structure.
+# Will have first that merges all types above.
+# Will have token type where:
+# i: ident, k: keyword, 0: number, e: equals, n: not equals, other tokens: themselves
+# Last array will be length of ident or keyword type (could also encode each keyword separately in token type).
 
 # This should now be a full monkey lang tokenizer (minus extensions).
 # Of course would have to get more fancy to deal with strings and comments.

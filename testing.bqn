@@ -52,6 +52,7 @@ d lnum⊸+↩
 # Repeats will be invalid syntax anyway.
 # So it is fine to parse `====` as `==` `=` `=`.
 n‿e←⋈˝"!="=⌜src
+on‿oe←n‿e
 fne←e(⊢∧«∘∧⟜»)n
 n (¬fne)⊸∧↩
 e (¬»fne)⊸∧↩
@@ -63,7 +64,7 @@ tc←"+-/*<>;,(){}"
 fc←n∨e∨tc∊˜src
 
 # Get all illegal tokens
-fi←¬az∨num∨fc∨src∊@+9‿10‿13‿32
+fx←¬az∨num∨fc∨on∨oe∨src∊@+9‿10‿13‿32
 
 fkw←kwt≠0
 
@@ -75,7 +76,7 @@ fkw←kwt≠0
 # For keywords, it is the keyword type: 1: fn, 2: let, 3: true, 4: false, 5: if, 6: else, 7: return
 # For identifiers and numbers, it is the length of the indentifier.
 
-fm←faz∨fnum∨fkw∨fne∨fee∨fc∨fi
+fm←faz∨fnum∨fkw∨fne∨fee∨fc∨fx
 f←/fm
 
 tt←fm/src
@@ -84,7 +85,7 @@ tt '0'¨⌾((fm/fnum)⊸/)↩
 tt 'k'¨⌾((fm/fkw)⊸/)↩ # Note Keyword types are in data array. They could be merged here.
 tt 'n'¨⌾((fm/fne)⊸/)↩
 tt 'e'¨⌾((fm/fee)⊸/)↩
-tt 'x'¨⌾((fm/fi)⊸/)↩
+tt 'x'¨⌾((fm/fx)⊸/)↩
 
 d fm⊸/↩
 

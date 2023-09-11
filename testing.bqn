@@ -1,3 +1,6 @@
+# This is a full monkey lang tokenizer (minus extensions; so no string or comments).
+# No perf tests have been done on it.
+
 src←"let five = 5;
 let ten = 10;
 
@@ -35,46 +38,54 @@ kws←"fn"‿"let"‿"true"‿"false"‿"if"‿"else"‿"return"
 pi←{/laz=≠𝕩}¨kws
 kwi←pi/˜¨ kws {kw←𝕨⋄{kw≡(≠kw)↑𝕩↓src}¨𝕩}¨ pi
 
-# •Show >kws‿kwi
-
 # Extract keyword types into full array.
-kwm←-1+↕≠kwi
-•Show >kws‿kwm
-
+kwm←1+↕≠kwi
 c←↕≠src
 kwt←+´kwm(⊣×c⊸∊)¨kwi
 
-# Merge keyword tokens back into lengths as negative values
-# These 2 steps may go away and instead fall into final merging phase.
-laz↩kwt+laz×kwt=0
-
-# merge numbers and idents since they ared distinguishable by the first character.
-faz fnum⊸+↩
-laz lnum⊸+↩
+# Merge all length data into one general data array.
+# Also includes the keyword type.
+d←kwt+laz×kwt=0
+d lnum⊸+↩
 
 # Only match the first `!=` or `==` in a chain.
 # Repeats will be invalid syntax anyway.
 # So it is fine to parse `====` as `==` `=` `=`.
 n‿e←⋈˝"!="=⌜src
-ne←e(⊢∧«∘∧⟜»)n
-n (¬ne)⊸∧↩
-e (¬»ne)⊸∧↩
-ee←(«∧⊢>»)e
-e ((¬»∨⊢)ee)⊸∧↩
+fne←e(⊢∧«∘∧⟜»)n
+n (¬fne)⊸∧↩
+e (¬»fne)⊸∧↩
+fee←(«∧⊢>»)e
+e ((¬»∨⊢)fee)⊸∧↩
 
 # All other symbols are just single characters.
-tc←"+-/*<>;,"
+tc←"+-/*<>;,(){}"
 fc←n∨e∨tc∊˜src
 
-•Show ⍉>src‿faz‿laz‿ne‿ee‿fc
+# Get all illegal tokens
+fi←¬az∨num∨fc∨src∊@+9‿10‿13‿32
 
-# TODO: merged into single compressed structure.
-# Will have first that merges all types above.
-# Will have token type where:
-# i: ident, k: keyword, 0: number, e: equals, n: not equals, other tokens: themselves
-# Last array will be length of ident or keyword type (could also encode each keyword separately in token type).
+fkw←kwt≠0
 
-# This should now be a full monkey lang tokenizer (minus extensions).
-# Of course would have to get more fancy to deal with strings and comments.
+# Final format
+# First array is i: ident, k: keyword, 0: number, e: equals, n: not equals, x: illegal, other tokens: themselves
+# Second array is the index in the original src (This will be used to extract identifiers later).
+# It also could be used for nice error messages.
+# The last array is miscellaneous data.
+# For keywords, it is the keyword type: 1: fn, 2: let, 3: true, 4: false, 5: if, 6: else, 7: return
+# For identifiers and numbers, it is the length of the indentifier.
 
-# Probably should also double check for no invalid characters instead of skipping them.
+fm←faz∨fnum∨fkw∨fne∨fee∨fc∨fi
+f←/fm
+
+tt←fm/src
+tt 'i'¨⌾((fm/faz)⊸/)↩
+tt '0'¨⌾((fm/fnum)⊸/)↩
+tt 'k'¨⌾((fm/fkw)⊸/)↩ # Note Keyword types are in data array. They could be merged here.
+tt 'n'¨⌾((fm/fne)⊸/)↩
+tt 'e'¨⌾((fm/fee)⊸/)↩
+tt 'x'¨⌾((fm/fi)⊸/)↩
+
+d fm⊸/↩
+
+•Show ⍉>tt‿f‿d

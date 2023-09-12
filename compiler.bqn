@@ -7,27 +7,26 @@ Lex←{
     src←𝕩
     # Get all the letters, their first index, and the length of chains
     az←('_'⊸=∨('a'⊸≤∧≤⟜'z')∨('A'⊸≤∧≤⟜'Z')) src
-    faz←(»<⊢)az
-    laz←(-˜˝˘∘‿2⥊/0(∾≠∾˜)az)⌾(faz⊸/)faz
+    faz←»⊸<⊢az
+    laz←-˜˝˘∘‿2⥊/0(∾≠∾˜)az
 
     # Do the same thing to get all of the numbers
     num←('0'⊸≤∧≤⟜'9') src
-    fnum←(»<⊢)num
-    lnum←(-˜˝˘∘‿2⥊/0(∾≠∾˜)num)⌾(fnum⊸/)fnum
+    fnum←»⊸<num
+    lnum←-˜˝˘∘‿2⥊/0(∾≠∾˜)num
 
     # Match all of the keywords
     kws←"fn"‿"let"‿"true"‿"false"‿"if"‿"else"‿"return"
-    pi←{/laz=≠𝕩}¨kws
-    kwi←pi/˜¨ kws {kw←𝕨⋄{kw≡(≠kw)↑𝕩↓src}¨𝕩}¨ pi
+    iaz←/faz
+    kwi←{
+      l←≠kw←𝕩
+      pi←iaz/˜l=laz
+      {kw≡l↑𝕩↓src}¨⊸/pi
+    }¨kws
 
     # Extract keyword types into full array.
     kwm←1+↕≠kwi
     kwt←+´kwm×(≠src)⊸↑∘(/⁼)¨kwi
-
-    # Merge all length data into one general data array.
-    # Also includes the keyword type.
-    d←kwt+laz×kwt=0
-    d lnum⊸+↩
 
     # Only match the first `!=` or `==` in a chain.
     # Repeats will be invalid syntax anyway.
@@ -35,10 +34,10 @@ Lex←{
     n‿e←⋈˝"!="=⌜src
     on‿oe←n‿e
     fne←e(⊢∧«∘∧⟜»)n
-    n (¬fne)⊸∧↩
-    e (¬»fne)⊸∧↩
+    n ∧↩ ¬fne
+    e ∧↩ ¬»fne
     fee←(«∧⊢>»)e
-    e ((¬»∨⊢)fee)⊸∧↩
+    e ∧↩ (¬»∨⊢)fee
 
     # All other symbols are just single characters.
     tc←"+-/*<>;,(){}"
@@ -59,16 +58,23 @@ Lex←{
 
     fm←faz∨fnum∨fkw∨fne∨fee∨fc∨fx
     f←/fm
+    ffaz←fm/faz
+    ffnum←fm/fnum
+    ffkw←fm/fkw
 
     tt←fm/src
-    tt 'i'¨⌾((fm/faz)⊸/)↩
-    tt '0'¨⌾((fm/fnum)⊸/)↩
-    tt 'k'¨⌾((fm/fkw)⊸/)↩ # Note Keyword types are in data array. They could be merged here.
+    tt 'i'¨⌾(ffaz⊸/)↩
+    tt '0'¨⌾(ffnum⊸/)↩
+    tt 'k'¨⌾(ffkw⊸/)↩ # Note Keyword types are in data array. They could be merged here.
     tt 'n'¨⌾((fm/fne)⊸/)↩
     tt 'e'¨⌾((fm/fee)⊸/)↩
     tt 'x'¨⌾((fm/fx)⊸/)↩
+    # fc does not update tt becuase characters stay as their oringal value.
 
-    d fm⊸/↩
+    d←0¨tt
+    d laz⌾(ffaz⊸/)↩
+    d lnum⌾(ffnum⊸/)↩
+    d (fkw/kwt)⌾(ffkw⊸/)↩
 
     tt‿f‿d
 }

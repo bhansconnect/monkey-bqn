@@ -58,19 +58,14 @@ Lex←{
 
     fm←faz∨fnum∨fkw∨fne∨fee∨fc∨fx
     f←/fm
+
+    # fc does not update tt becuase characters stay as their oringal value.
+    tt←"ki0nex "⊏˜+´∧`¬fkw‿faz‿fnum‿fne‿fee‿fx
+    tt↩fm/src⊣⌾((' '=tt)⊸/)tt
+
     ffaz←fm/faz
     ffnum←fm/fnum
     ffkw←fm/fkw
-
-    tt←fm/src
-    tt 'i'¨⌾(ffaz⊸/)↩
-    tt '0'¨⌾(ffnum⊸/)↩
-    tt 'k'¨⌾(ffkw⊸/)↩ # Note Keyword types are in data array. They could be merged here.
-    tt 'n'¨⌾((fm/fne)⊸/)↩
-    tt 'e'¨⌾((fm/fee)⊸/)↩
-    tt 'x'¨⌾((fm/fx)⊸/)↩
-    # fc does not update tt becuase characters stay as their oringal value.
-
     d←0¨tt
     d laz⌾(ffaz⊸/)↩
     d lnum⌾(ffnum⊸/)↩

@@ -24,7 +24,7 @@ Lex←{
     # Extract keyword types into full array.
     kwm←1+↕≠kwi
     c←↕≠src
-    kwt←+´kwm(⊣×c⊸∊)¨kwi
+    kwt←+´kwm×(≠src)⊸↑∘(/⁼)¨kwi
 
     # Merge all length data into one general data array.
     # Also includes the keyword type.

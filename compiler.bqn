@@ -2,8 +2,7 @@
   Lex
 ⟩⇐
 
-# This is a full monkey lang tokenizer (minus extensions; so no string or comments).
-# Minimal perf tests have been done on it.
+# This is a full monkey lang tokenizer based on chapter 1 of the book (so no string or comments).
 Lex←{
     src←𝕩
     # Get all the letters, their first index, and the length of chains

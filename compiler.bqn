@@ -1,8 +1,11 @@
+⟨
+  Lex
+⟩⇐
+
 # This is a full monkey lang tokenizer (minus extensions; so no string or comments).
-# No perf tests have been done on it.
+# Minimal perf tests have been done on it.
 Lex←{
     src←𝕩
-
     # Get all the letters, their first index, and the length of chains
     az←('_'⊸=∨('a'⊸≤∧≤⟜'z')∨('A'⊸≤∧≤⟜'Z')) src
     faz←(»<⊢)az
@@ -71,6 +74,3 @@ Lex←{
 
     •Show ⍉>tt‿f‿d
 }
-
-•Show Lex•Fchars⊑•args
-

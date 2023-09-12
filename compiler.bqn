@@ -9,12 +9,14 @@ Lex←{
     # Get all the letters, their first index, and the length of chains
     az←('_'⊸=∨('a'⊸≤∧≤⟜'z')∨('A'⊸≤∧≤⟜'Z')) src
     faz←(»<⊢)az
-    laz←faz×(+×0⊸≠)`⌾⌽ az
+    caz←-˜˝˘∘‿2⥊/0(∾≠∾˜)az
+    laz←caz⌾(faz⊸/)faz
 
     # Do the same thing to get all of the numbers
     num←('0'⊸≤∧≤⟜'9') src
     fnum←(»<⊢)num
-    lnum←fnum×(+×0⊸≠)`⌾⌽ num
+    cnum←-˜˝˘∘‿2⥊/0(∾≠∾˜)num
+    lnum←cnum⌾(fnum⊸/)fnum
 
     # Match all of the keywords
     kws←"fn"‿"let"‿"true"‿"false"‿"if"‿"else"‿"return"

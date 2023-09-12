@@ -72,5 +72,5 @@ Lex←{
 
     d fm⊸/↩
 
-    •Show ⍉>tt‿f‿d
+    tt‿f‿d
 }

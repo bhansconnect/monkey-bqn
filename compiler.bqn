@@ -15,19 +15,6 @@ Lex←{
     fnum←»⊸<num
     lnum←-˜˝˘∘‿2⥊/0(∾≠∾˜)num
 
-    # Match all of the keywords
-    kws←"fn"‿"let"‿"true"‿"false"‿"if"‿"else"‿"return"
-    iaz←/faz
-    kwi←{
-      l←≠kw←𝕩
-      pi←iaz/˜l=laz
-      {kw≡l↑𝕩↓src}¨⊸/pi
-    }¨kws
-
-    # Extract keyword types into full array.
-    kwm←1+↕≠kwi
-    kwt←+´kwm×(≠src)⊸↑∘(/⁼)¨kwi
-
     # Only match the first `!=` or `==` in a chain.
     # Repeats will be invalid syntax anyway.
     # So it is fine to parse `====` as `==` `=` `=`.
@@ -46,8 +33,6 @@ Lex←{
     # Get all illegal tokens
     fx←¬az∨num∨fc∨on∨oe∨src∊@+9‿10‿13‿32
 
-    fkw←kwt≠0
-
     # Final format
     # First array is i: ident, k: keyword, 0: number, e: equals, n: not equals, x: illegal, other tokens: themselves
     # Second array is the index in the original src (This will be used to extract identifiers later).
@@ -56,20 +41,38 @@ Lex←{
     # For keywords, it is the keyword type: 1: fn, 2: let, 3: true, 4: false, 5: if, 6: else, 7: return
     # For identifiers and numbers, it is the length of the indentifier.
 
-    fm←faz∨fnum∨fkw∨fne∨fee∨fc∨fx
-    f←/fm
-
+    # Construct token type array.
     # fc does not update tt becuase characters stay as their oringal value.
-    tt←"ki0nex "⊏˜+´∧`¬fkw‿faz‿fnum‿fne‿fee‿fx
+    fm←faz∨fnum∨fne∨fee∨fc∨fx
+    tt←"i0nex "⊏˜+´∧`¬faz‿fnum‿fne‿fee‿fx
+    # This line is pretty slow, about 25% of execution time.
     tt↩fm/src⊣⌾((' '=tt)⊸/)tt
 
+    # Construct index array.
+    f←/fm
+
+    # Construct data array.
     ffaz←fm/faz
     ffnum←fm/fnum
-    ffkw←fm/fkw
     d←0¨tt
     d laz⌾(ffaz⊸/)↩
     d lnum⌾(ffnum⊸/)↩
-    d (fkw/kwt)⌾(ffkw⊸/)↩
+
+    # We skipped keywords above. Add them now.
+    # Convert identifiers to keywords if they match.
+    # This really feels like it could be done better.
+    # ~50% of execution time is spent calculating `w` and `kwt`.
+    # Originally, I calculated kwt when first extracting identifiers.
+    # That also had promise, but was a bit slower than this is.
+    i←'i'=tt
+    w←(i/d)↑¨(i/f)↓⌜<src
+
+    kws←"fn"‿"let"‿"true"‿"false"‿"if"‿"else"‿"return"
+    kwt←kws⊐w
+    mk←(≠∘kws≠⊢)kwt
+    # These updates are also pretty slow.
+    tt ('k'-'i')⊸+⌾(mk⊸/i⊸/)↩
+    d (mk/kwt)⌾(mk⊸/i⊸/)↩
 
     tt‿f‿d
 }

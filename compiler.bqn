@@ -42,11 +42,10 @@ Lex←{
     # For identifiers and numbers, it is the length of the indentifier.
 
     # Construct token type array.
-    # fc does not update tt becuase characters stay as their oringal value.
+    # fc does not update tt becuase characters stay as their orignal value.
     fm←faz∨fnum∨fne∨fee∨fc∨fx
-    tt←"i0nex "⊏˜+´∧`¬faz‿fnum‿fne‿fee‿fx
-    # This line is pretty slow, about 25% of execution time.
-    tt↩fm/src⊣⌾((' '=tt)⊸/)tt
+    tt←"i0nex "⊏˜fm/+´∧`¬faz‿fnum‿fne‿fee‿fx
+    tt (fc/src)⌾((' '=tt)⊸/)↩
 
     # Construct index array.
     f←/fm

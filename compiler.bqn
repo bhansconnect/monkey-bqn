@@ -45,7 +45,7 @@ Lex←{
     # fc does not update tt becuase characters stay as their orignal value.
     fm←faz∨fnum∨fne∨fee∨fc∨fx
     tt←"i0nex "⊏˜fm/+´∧`¬faz‿fnum‿fne‿fee‿fx
-    tt (fc/src)⌾((/' '=tt)⊸⊏)↩
+    tt (fc/src)⌾((' '=tt)⊸/)↩
 
     # Construct index array.
     f←/fm
@@ -67,7 +67,7 @@ Lex←{
     w←(i/d)↑¨(i/f)↓⌜<src
 
     kws←"fn"‿"let"‿"true"‿"false"‿"if"‿"else"‿"return"
-    # # fkw←kws/∘⍷⌜<src
+    # fkw←kws/∘⍷⌜<src
     # tmp←((/faz)+⌜↕7)⊏src∾" "
     kwt←kws⊐w
     mk←(≠∘kws≠⊢)kwt

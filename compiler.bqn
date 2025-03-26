@@ -45,7 +45,7 @@ Lex←{
     # fc does not update tt becuase characters stay as their orignal value.
     fm←faz∨fnum∨fne∨fee∨fc∨fx
     tt←"i0nex "⊏˜fm/+´∧`¬faz‿fnum‿fne‿fee‿fx
-    tt (fc/src)⌾((' '=tt)⊸/)↩
+    tt (fc/src)⌾((/' '=tt)⊸⊏)↩
 
     # Construct index array.
     f←/fm
@@ -54,8 +54,8 @@ Lex←{
     ffaz←fm/faz
     ffnum←fm/fnum
     d←0¨tt
-    d laz⌾(ffaz⊸/)↩
-    d lnum⌾(ffnum⊸/)↩
+    d laz⌾((/ffaz)⊸⊏)↩
+    d lnum⌾((/ffnum)⊸⊏)↩
 
     # We skipped keywords above. Add them now.
     # Convert identifiers to keywords if they match.
@@ -67,11 +67,12 @@ Lex←{
     w←(i/d)↑¨(i/f)↓⌜<src
 
     kws←"fn"‿"let"‿"true"‿"false"‿"if"‿"else"‿"return"
+    # # fkw←kws/∘⍷⌜<src
+    # tmp←((/faz)+⌜↕7)⊏src∾" "
     kwt←kws⊐w
     mk←(≠∘kws≠⊢)kwt
-    # These updates are also pretty slow.
-    tt ('k'-'i')⊸+⌾(mk⊸/i⊸/)↩
-    d (mk/kwt)⌾(mk⊸/i⊸/)↩
+    tt ('k'-'i')⊸+⌾((mk//i)⊸⊏)↩
+    d (mk/kwt)⌾((mk//i)⊸⊏)↩
 
     tt‿f‿d
 }

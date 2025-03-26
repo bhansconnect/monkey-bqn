@@ -63,16 +63,16 @@ Lex←{
     # ~50% of execution time is spent calculating `w` and `kwt`.
     # Originally, I calculated kwt when first extracting identifiers.
     # That also had promise, but was a bit slower than this is.
-    i←'i'=tt
-    w←(i/d)↑¨(i/f)↓⌜<src
-
     kws←"fn"‿"let"‿"true"‿"false"‿"if"‿"else"‿"return"
-    # fkw←kws/∘⍷⌜<src
-    # tmp←((/faz)+⌜↕7)⊏src∾" "
-    kwt←kws⊐w
-    mk←(≠∘kws≠⊢)kwt
-    tt ('k'-'i')⊸+⌾((mk//i)⊸⊏)↩
-    d (mk/kwt)⌾((mk//i)⊸⊏)↩
+    kwm←kws(faz⊸∧≠∘⊢↑⍷)⌜<src # keyword matches across the source that start at the correct index
+    kwi←/∨´kwm               # Indices of keywords
+    kwd←kwi⊸⊏+´kwm×¨≠¨kws    # Length of each keyword
+    kwt←kwi⊸⊏+´kwm×¨1+↕≠kws  # Type of each keyword
+    mi←f⊐kwi                 # Matching token indices for keywords (only first index match)
+    md←(kwd=mi⊏d)            # If the keyword fully matches (length included)
+    mi md⊸/↩                 # Fully matching token indices for keywords
+    tt 'k'¨⌾(mi⊸⊏)↩          # Update token type to 'k'
+    d (md/kwt)⌾(mi⊸⊏)↩       # Update data to keyword type
 
     tt‿f‿d
 }

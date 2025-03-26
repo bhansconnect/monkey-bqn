@@ -60,7 +60,7 @@ Lex←{
     # We skipped keywords above. Add them now.
     # Convert identifiers to keywords if they match.
     # This really feels like it could be done better.
-    # ~50% of execution time is spent calculating `w` and `kwt`.
+    # ~50% of execution time is spent after this line.
     # Originally, I calculated kwt when first extracting identifiers.
     # That also had promise, but was a bit slower than this is.
     kws←"fn"‿"let"‿"true"‿"false"‿"if"‿"else"‿"return"
